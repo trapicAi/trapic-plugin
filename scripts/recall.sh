@@ -1,7 +1,7 @@
 #!/bin/bash
 # Auto-recall: output instruction for Claude to call trapic_recall
 
-PROJECT=$(basename "$(git remote get-url origin 2>/dev/null || echo '')" .git 2>/dev/null)
+PROJECT=$(git remote get-url origin 2>/dev/null | sed 's|.*/||;s|\.git$||')
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 
 if [ -z "$PROJECT" ]; then
