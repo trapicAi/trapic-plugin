@@ -1,5 +1,5 @@
 #!/bin/bash
-# Auto-recall: output instruction for Claude to call trapic_recall
+# Auto-recall: output instruction for Claude to call trapic-recall
 # If TRAPIC_TOKEN is missing, guide the user through setup instead
 
 if [ -z "$TRAPIC_TOKEN" ]; then
@@ -40,9 +40,9 @@ if [ -z "$PROJECT" ]; then
 fi
 
 cat <<EOF
-REQUIRED ACTION: Before responding to the user, you MUST call the mcp__trapic__recall tool to load project knowledge. This is a mandatory step — do not skip it.
+REQUIRED ACTION: Before responding to the user, you MUST call the trapic-recall tool to load project knowledge. This is a mandatory step — do not skip it.
 
-mcp__trapic__recall({
+trapic-recall({
   context: "session start",
   scope: ["project:${PROJECT}", "branch:${BRANCH}"],
   project: "${PROJECT}"

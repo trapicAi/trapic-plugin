@@ -3,7 +3,8 @@
 Before creating any decision or convention trace, this mandatory process
 prevents contradictory knowledge from coexisting in the knowledge base.
 
-**IMPORTANT:** Use MCP tools with the `mcp__trapic__` prefix for all operations.
+**IMPORTANT:** Use Trapic MCP tools (`trapic-search`, `trapic-create`,
+`trapic-update`) for all operations.
 
 ## 5-Step Flow
 
@@ -16,7 +17,7 @@ Client AI determines a decision/convention is worth recording
   |     Bad:  topic:jotai (too specific, won't match old Redux trace)
   |
   +-- Step 2: Search for conflicts using the most relevant topic tag
-  |     mcp__trapic__search({
+  |     trapic-search({
   |       types: ["decision", "convention"],
   |       tags: ["topic:<most-relevant>"],
   |       scope: ["project:<name>"],
@@ -32,13 +33,13 @@ Client AI determines a decision/convention is worth recording
   |
   +-- Step 4: Execute
   |     If conflict found:
-  |       1. mcp__trapic__create(new trace) -> get new_id
-  |       2. mcp__trapic__update({ trace_id: "<old>", superseded_by: "<new_id>" })
+  |       1. trapic-create(new trace) -> get new_id
+  |       2. trapic-update({ trace_id: "<old>", superseded_by: "<new_id>" })
   |          for conflicting decisions
-  |       3. mcp__trapic__update({ trace_id: "<old>", status: "deprecated" })
+  |       3. trapic-update({ trace_id: "<old>", status: "deprecated" })
   |          for invalidated conventions
   |     If no conflict:
-  |       1. mcp__trapic__create(new trace)
+  |       1. trapic-create(new trace)
   |
   +-- Step 5: Silent completion
         Do NOT announce or summarize to the user.

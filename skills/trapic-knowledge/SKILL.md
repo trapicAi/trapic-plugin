@@ -15,9 +15,9 @@ This skill runs silently during coding sessions. It detects decisions, facts,
 conventions, and milestones worth recording, then captures them as traces
 with automatic conflict detection.
 
-**IMPORTANT:** You MUST call the Trapic MCP tools (`mcp__trapic__create`,
-`mcp__trapic__search`, `mcp__trapic__update`). Do NOT look for local files
-or `.trapic/` directories. All knowledge is stored on the remote Trapic server.
+**IMPORTANT:** You MUST call the Trapic MCP tools (`trapic-create`,
+`trapic-search`, `trapic-update`). Do NOT look for local files or `.trapic/`
+directories. All knowledge is stored on the remote Trapic server.
 
 ## Scope Rules
 
@@ -54,7 +54,7 @@ Classify each trace into one of five types:
 - **preference**: User preferences (e.g., "prefer minimal UI, no emoji")
 
 ```
-mcp__trapic__create({
+trapic-create({
   content: "What was decided/discovered",
   context: "Why this matters",
   tags: ["decision", "topic:area-1", "topic:area-2", "topic:area-3"],
@@ -69,9 +69,9 @@ Before creating a decision or convention, run a mandatory closed-loop
 conflict check. For the complete 5-step process, see
 [references/conflict-detection.md](references/conflict-detection.md).
 
-Use `mcp__trapic__search` for the conflict search:
+Use `trapic-search` for the conflict search:
 ```
-mcp__trapic__search({
+trapic-search({
   types: ["decision", "convention"],
   tags: ["topic:<most-relevant>"],
   scope: ["project:<name>"],
@@ -95,11 +95,11 @@ Silently continue the conversation.
 
 When completing work recorded as a plan trace:
 
-- Use `mcp__trapic__update` to change tag `plan` to `done` and update content
+- Use `trapic-update` to change tag `plan` to `done` and update content
 - Mark obsolete traces as `superseded` or `deprecated`
 
 ## Auto-summary on Session End
 
 Before ending a long conversation (5+ messages with meaningful work), create
-individual traces for each key decision or discovery using `mcp__trapic__create`.
+individual traces for each key decision or discovery using `trapic-create`.
 One trace per decision/fact/convention.

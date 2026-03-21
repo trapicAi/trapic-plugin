@@ -11,7 +11,7 @@ description: >
 
 Search project knowledge with topic-inferred filtering using the Trapic MCP tools.
 
-**IMPORTANT:** You MUST call the `mcp__trapic__search` tool. Do NOT look for
+**IMPORTANT:** You MUST call the `trapic-search` tool. Do NOT look for
 local files or `.trapic/` directories. All knowledge is stored on the remote
 Trapic server.
 
@@ -54,9 +54,9 @@ Domain values: `architecture`, `security`, `auth`, `api`, `database`,
 `design`, `deployment`, `testing`, `ui`, `performance`, `infrastructure`,
 `frontend`, `backend`, `strategy`
 
-**Step 4 — Call `mcp__trapic__search`** with enriched parameters:
+**Step 4 — Call `trapic-search`** with enriched parameters:
 ```
-mcp__trapic__search({
+trapic-search({
   query: "<original keyword>",
   tags: ["topic:<inferred-1>", "topic:<inferred-2>", "topic:<inferred-3>"],
   scope: ["project:<name>", "domain:<inferred>"],
@@ -77,7 +77,7 @@ a wider net than either alone.
 User: "what did we decide about caching?"
   |
   v
-mcp__trapic__search({
+trapic-search({
   query: "cache",
   tags: ["topic:caching", "topic:performance", "topic:infrastructure"],
   scope: ["project:myapp", "domain:infrastructure"],

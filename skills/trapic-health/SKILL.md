@@ -17,10 +17,10 @@ or `.trapic/` directories. All knowledge is stored on the remote Trapic server.
 
 ## Health Check
 
-Call the `mcp__trapic__health` tool:
+Call the `trapic-health` tool:
 
 ```
-mcp__trapic__health({
+trapic-health({
   scope: ["project:<name>"]
 })
 ```
@@ -36,10 +36,10 @@ This returns:
 
 ## Decay Scan
 
-Call the `mcp__trapic__decay` tool:
+Call the `trapic-decay` tool:
 
 ```
-mcp__trapic__decay({
+trapic-decay({
   scope: ["project:<name>"],
   threshold: 0.3
 })
