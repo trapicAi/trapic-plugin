@@ -10,17 +10,23 @@ description: >
 # Knowledge Health Report
 
 This skill provides a comprehensive view of project knowledge health using
-`health` and `decay`.
+the Trapic MCP tools.
+
+**IMPORTANT:** You MUST call the MCP tools below. Do NOT look for local files
+or `.trapic/` directories. All knowledge is stored on the remote Trapic server.
 
 ## Health Check
 
-To generate a full health report:
+Call the `mcp__trapic__health` tool:
 
 ```
-health({
+mcp__trapic__health({
   scope: ["project:<name>"]
 })
 ```
+
+Get the project name from `git remote get-url origin` (extract repo name) or
+the current directory name.
 
 This returns:
 - **Health score**: Overall project knowledge health (0-100)
@@ -30,10 +36,10 @@ This returns:
 
 ## Decay Scan
 
-To inspect which traces are losing relevance:
+Call the `mcp__trapic__decay` tool:
 
 ```
-decay({
+mcp__trapic__decay({
   scope: ["project:<name>"],
   threshold: 0.3
 })

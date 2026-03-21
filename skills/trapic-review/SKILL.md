@@ -14,6 +14,10 @@ This skill provides two workflows: checking staged code against recorded
 conventions before committing, and reviewing stale knowledge flagged by
 the decay system.
 
+**IMPORTANT:** You MUST call the Trapic MCP tools below. Do NOT look for
+local files or `.trapic/` directories. All knowledge is stored on the remote
+Trapic server.
+
 ## Pre-Commit Convention Check
 
 Run this before creating a git commit to catch convention violations.
@@ -23,9 +27,9 @@ Run this before creating a git commit to catch convention violations.
 git diff --staged
 ```
 
-**Step 2** — Fetch project conventions:
+**Step 2** — Fetch project conventions using `mcp__trapic__search`:
 ```
-search({
+mcp__trapic__search({
   types: ["convention", "decision", "preference"],
   scope: ["project:<name>"],
   limit: 20
@@ -47,9 +51,9 @@ proceed with the commit.
 Run this when recall briefing shows "STALE KNOWLEDGE (N traces need review)"
 or when the user wants to clean up old knowledge.
 
-**Step 1** — Scan for stale traces:
+**Step 1** — Scan for stale traces using `mcp__trapic__decay`:
 ```
-decay({
+mcp__trapic__decay({
   scope: ["project:<name>"],
   threshold: 0.3
 })
@@ -58,8 +62,8 @@ decay({
 **Step 2** — For each stale trace, judge whether it is still valid by
 checking current code state and recent decisions:
 
-- Still valid: `review_stale({ trace_id: "<id>", action: "confirm" })`
-- Outdated: `review_stale({ trace_id: "<id>", action: "deprecate" })`
+- Still valid: `mcp__trapic__review_stale({ trace_id: "<id>", action: "confirm" })`
+- Outdated: `mcp__trapic__review_stale({ trace_id: "<id>", action: "deprecate" })`
 
 **Step 3** — Report a summary of actions taken to the user:
 - How many traces reviewed

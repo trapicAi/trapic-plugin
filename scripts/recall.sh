@@ -40,9 +40,9 @@ if [ -z "$PROJECT" ]; then
 fi
 
 cat <<EOF
-REQUIRED ACTION: Before responding to the user, you MUST call trapic_recall first to load project knowledge. This is a mandatory step — do not skip it.
+REQUIRED ACTION: Before responding to the user, you MUST call the mcp__trapic__recall tool to load project knowledge. This is a mandatory step — do not skip it.
 
-trapic_recall({
+mcp__trapic__recall({
   context: "session start",
   scope: ["project:${PROJECT}", "branch:${BRANCH}"],
   project: "${PROJECT}"
