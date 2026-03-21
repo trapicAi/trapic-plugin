@@ -11,5 +11,6 @@
   "license": "MIT",
   "keywords": ["memory", "knowledge", "mcp", "recall", "trapic"],
   "mcpServers": "./.mcp.json",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
 }
