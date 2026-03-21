@@ -1,6 +1,6 @@
 {
   "name": "trapic",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "AI long-term memory for coding assistants — auto-recall, knowledge capture, and smart decay",
   "author": {
     "name": "Trapic",
@@ -11,6 +11,5 @@
   "license": "MIT",
   "keywords": ["memory", "knowledge", "mcp", "recall", "trapic"],
   "mcpServers": "./.mcp.json",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }
