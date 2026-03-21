@@ -1,100 +1,89 @@
 ---
 name: trapic-search
 description: >
-  This skill should be used when the user wants to search project knowledge,
-  find past decisions, look up conventions, or ask questions like "what did
-  we decide about X", "find traces about Y", "any conventions for Z",
-  "search knowledge", or "what do we know about".
+  Use when the user wants to search project knowledge, find past decisions,
+  look up conventions, or asks "what did we decide about X", "find traces
+  about Y", "search knowledge", or "what do we know about".
 ---
 
 # Smart Search
 
-Search project knowledge with topic-inferred filtering using the Trapic MCP tools.
+Search project knowledge using the `trapic-search` MCP tool.
 
-**IMPORTANT:** You MUST call the `trapic-search` tool. Do NOT look for
-local files or `.trapic/` directories. All knowledge is stored on the remote
-Trapic server.
+**IMPORTANT:** Do NOT look for local files or `.trapic/` directories. All knowledge is on the remote Trapic server.
 
-## Why Topic Inference Matters
+## CRITICAL: Tags-First Search Strategy
 
-Keyword search alone misses semantically related traces:
-- User asks about "cache" but a trace says "Redis session storage"
-- User asks about "styling" but a trace says "CSS custom properties"
+**keyword search (query) is WEAK** — it only matches exact substrings. Searching "platform value" will NOT find a trace about "AI 協作的中文閱讀平台".
 
-Topic tags bridge this gap by grouping traces under problem domains.
+**Topic tags are the PRIMARY search mechanism.** Tags use OR logic and match by problem domain, bridging terminology gaps.
+
+**ALWAYS include `tags` in every search call. NEVER search with only `query`.**
 
 ## Search Process
 
-**Step 1 — Extract keywords** from the user's request:
-- "find me recent stuff about cache" -> keyword: `cache`
-- "what did we decide about auth?" -> keyword: `auth`
+**Step 1 — Infer 3 topic tags** from the user's question. Tags describe the **problem area**, not the technology:
 
-**Step 2 — Infer 1-3 topic tags** describing the problem domain:
-- `cache` -> `topic:caching`, `topic:performance`, `topic:infrastructure`
-- `auth` -> `topic:authentication`, `topic:security`, `topic:api`
-- `styling` -> `topic:styling`, `topic:theming`, `topic:css`
+| User asks about | Topic tags to use |
+|----------------|-------------------|
+| "platform value/direction" | `topic:product-direction`, `topic:platform-identity`, `topic:strategy` |
+| "cache/performance" | `topic:caching`, `topic:performance`, `topic:infrastructure` |
+| "auth/login" | `topic:authentication`, `topic:security`, `topic:api` |
+| "styling/design" | `topic:styling`, `topic:theming`, `topic:visual-design` |
+| "layout/responsive" | `topic:layout`, `topic:responsive-design`, `topic:ui` |
+| "roadmap/features" | `topic:roadmap`, `topic:feature-planning`, `topic:project-scope` |
+| "tech stack" | `topic:tech-stack`, `topic:infrastructure`, `topic:deployment` |
 
-Tags describe the **area**, not the technology.
-
-**Step 3 — Infer domain** from the topic area:
-
-| Topic area | Domain |
-|------------|--------|
-| caching, infra | `domain:infrastructure` |
-| auth, security | `domain:security` |
-| styling, css, theming | `domain:design` |
-| api, endpoints | `domain:api` |
-| database, schema | `domain:database` |
-| deploy, ci/cd | `domain:deployment` |
-| testing, coverage | `domain:testing` |
-| components, layout | `domain:ui` |
-| framework, bundler | `domain:architecture` |
-
-Domain values: `architecture`, `security`, `auth`, `api`, `database`,
-`design`, `deployment`, `testing`, `ui`, `performance`, `infrastructure`,
-`frontend`, `backend`, `strategy`
-
-**Step 4 — Call `trapic-search`** with enriched parameters:
+**Step 2 — Call `trapic-search`** with tags as primary filter:
 ```
 trapic-search({
-  query: "<original keyword>",
   tags: ["topic:<inferred-1>", "topic:<inferred-2>", "topic:<inferred-3>"],
-  scope: ["project:<name>", "domain:<inferred>"],
+  scope: ["project:<name>"],
   limit: 10
 })
 ```
 
-`query` performs keyword substring matching. `tags` uses OR logic to catch
-semantically related traces with different terminology. Together they cast
-a wider net than either alone.
+Do NOT include `query` in the first attempt. Tags alone will find the right traces.
 
-**Step 5 — If results are too few** (fewer than 3), broaden by removing
-`domain` from scope and retry with only the project scope.
+**Step 3 — If 0 results**, broaden: remove one tag, or try related tags.
+
+**Step 4 — If still 0**, fallback to `query` with a single short keyword:
+```
+trapic-search({
+  query: "<single keyword>",
+  scope: ["project:<name>"],
+  limit: 20
+})
+```
+
+**Step 5 — If still 0**, list all traces in scope (no filters):
+```
+trapic-search({
+  scope: ["project:<name>"],
+  limit: 50
+})
+```
+Then scan results manually.
 
 ## Example
 
 ```
-User: "what did we decide about caching?"
+User: "what's our platform's value proposition?"
   |
   v
 trapic-search({
-  query: "cache",
-  tags: ["topic:caching", "topic:performance", "topic:infrastructure"],
-  scope: ["project:myapp", "domain:infrastructure"],
-  types: ["decision", "convention"],
+  tags: ["topic:product-direction", "topic:platform-identity", "topic:strategy"],
+  scope: ["project:myapp"],
   limit: 10
 })
   |
   v
 Results:
-  "Use Redis for session storage and caching"      <- keyword match
-  "Switch to in-memory cache for lower latency"    <- topic:caching match
-  "Cache TTL defaults: API 5min, sessions 24h"     <- topic:performance match
+  "MM 定位為 AI 協作的中文閱讀平台"  <- topic:product-direction match
 ```
 
 ## Additional Filters
 
-To narrow results, add optional parameters:
 - `types: ["decision"]` — only decisions
 - `types: ["convention"]` — only conventions
 - `time_days: 7` — last 7 days only

@@ -229,30 +229,33 @@ description: >
 
 # Smart Search
 
-Search project knowledge using the `trapic-search` MCP tool.
+**IMPORTANT:** Call `trapic-search` MCP tool. Do NOT look for local files.
 
-**IMPORTANT:** Call `trapic-search`, do NOT look for local files or `.trapic/` directories.
+## CRITICAL: Tags-First Search
+
+keyword search (query) is WEAK — exact substring only. Use **topic tags as PRIMARY search**.
+
+**ALWAYS include `tags`. NEVER search with only `query`.**
 
 ## Process
 
-1. **Extract keywords** from the user's request
-2. **Infer 1-3 topic tags** for the problem domain (not the technology)
-3. **Call:**
+1. **Infer 3 topic tags** from the user's question (problem area, not technology)
+2. **Call with tags only** (no query):
 ```
 trapic-search({
-  query: "<keyword>",
-  tags: ["topic:<inferred-1>", "topic:<inferred-2>"],
+  tags: ["topic:<inferred-1>", "topic:<inferred-2>", "topic:<inferred-3>"],
   scope: ["project:<name>"],
   limit: 10
 })
 ```
-4. If fewer than 3 results, broaden by removing domain from scope and retry.
+3. If 0 results, broaden: remove a tag or try related tags
+4. If still 0, fallback to `query` with a single short keyword
+5. Last resort: list all `trapic-search({ scope: ["project:<name>"], limit: 50 })`
 
 ## Filters
 - `types: ["decision"]` — only decisions
 - `types: ["convention"]` — only conventions
 - `time_days: 7` — last 7 days only
-- `status: "active"` — only active traces (default)
 SKILLEOF
 
   # trapic-health skill
