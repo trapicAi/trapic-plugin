@@ -41,7 +41,17 @@ This sets up everything without using the plugin system:
 
 ### Option C: Fully manual
 
-**1. Add MCP server** — create `.mcp.json` in your project root:
+**1. Set your token** — edit `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "TRAPIC_TOKEN": "tr_your_token_here"
+  }
+}
+```
+
+**2. Add MCP server** — create `.mcp.json` in your project root (the `${TRAPIC_TOKEN}` is auto-filled from step 1):
 
 ```json
 {
@@ -57,17 +67,7 @@ This sets up everything without using the plugin system:
 }
 ```
 
-**2. Add token** — edit `~/.claude/settings.json`:
-
-```json
-{
-  "env": {
-    "TRAPIC_TOKEN": "tr_your_token_here"
-  }
-}
-```
-
-**3. Add auto-recall hook** — create `.claude/hooks/trapic-recall.sh`:
+**3. Add auto-recall hook (optional)** — create `.claude/hooks/trapic-recall.sh`:
 
 ```bash
 #!/bin/bash
