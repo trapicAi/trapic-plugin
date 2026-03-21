@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "trapic": {
-      "type": "sse",
+      "type": "url",
       "url": "https://mcp.trapic.ai/mcp",
       "headers": {
         "Authorization": "Bearer ${TRAPIC_TOKEN}"

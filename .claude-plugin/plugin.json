@@ -1,6 +1,6 @@
 {
   "name": "trapic",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "AI long-term memory for coding assistants — auto-recall, knowledge capture, and smart decay",
   "author": {
     "name": "Trapic",
