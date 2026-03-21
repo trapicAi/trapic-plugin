@@ -57,7 +57,7 @@ This sets up everything without using the plugin system:
 {
   "mcpServers": {
     "trapic": {
-      "type": "url",
+      "type": "http",
       "url": "https://mcp.trapic.ai/mcp",
       "headers": {
         "Authorization": "Bearer ${TRAPIC_TOKEN}"

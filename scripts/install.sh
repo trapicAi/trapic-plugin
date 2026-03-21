@@ -64,7 +64,7 @@ import json
 p = '$MCP_FILE'
 d = json.load(open(p))
 d.setdefault('mcpServers', {})['trapic'] = {
-  'type': 'url',
+  'type': 'http',
   'url': 'https://mcp.trapic.ai/mcp',
   'headers': { 'Authorization': 'Bearer \${TRAPIC_TOKEN}' }
 }
@@ -75,7 +75,7 @@ json.dump(d, open(p, 'w'), indent=2)
 {
   "mcpServers": {
     "trapic": {
-      "type": "url",
+      "type": "http",
       "url": "https://mcp.trapic.ai/mcp",
       "headers": {
         "Authorization": "Bearer ${TRAPIC_TOKEN}"
