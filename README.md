@@ -1,6 +1,6 @@
 # Trapic — Long-term Memory for AI Coding Assistants
 
-[![Version](https://img.shields.io/badge/version-0.5.0-blue)](https://github.com/nickjazz/trapic-plugin) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE) [![MCP](https://img.shields.io/badge/MCP-compatible-purple)](https://modelcontextprotocol.io)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue)](https://github.com/nickjazz/trapic-plugin) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE) [![MCP](https://img.shields.io/badge/MCP-compatible-purple)](https://modelcontextprotocol.io)
 
 [English](./README.md) | [繁體中文](./README.zh-TW.md) | [日本語](./README.ja.md)
 
@@ -167,10 +167,14 @@ Removes MCP config, hooks, CLAUDE.md instructions, and optionally your token.
 
 Every session automatically loads project knowledge on startup — foundations, team updates, cross-branch activity. No manual action needed.
 
+### Auto-capture (Stop hook)
+
+After each AI response, a subagent reviews the conversation and silently captures any decisions, conventions, or discoveries using `trapic-create`. This is more reliable than asking the main AI to "always capture while coding" — the subagent runs independently after the main task is done.
+
 ## How it works
 
 1. **Session start** — Hook + CLAUDE.md triggers `trapic-recall`, loads full project context
-2. **During coding** — Decisions, conventions, and facts are silently captured with topic tags
+2. **After each response** — Stop hook spawns a subagent to capture decisions/conventions/facts
 3. **Before each decision** — Conflict detection searches by topic, supersedes outdated traces
 4. **Search** — `trapic-search` infers topic tags from vague queries for semantic matching
 5. **Before commit** — `/trapic-review` checks staged diff against project conventions

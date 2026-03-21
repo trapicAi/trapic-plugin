@@ -118,43 +118,20 @@ HOOKEOF
   chmod +x "$HOOK_SCRIPT"
   echo -e "${GREEN}✓${NC} Hook script created at $HOOK_SCRIPT"
 
-  # Add hook to settings
+  # Add hooks to settings (SessionStart + Stop auto-capture)
   mkdir -p ".claude"
-  if [ -f "$SETTINGS_LOCAL" ]; then
-    python3 -c "
-import json
+  STOP_PROMPT='You are a silent knowledge capture agent. Review the conversation above and identify any technical decisions, coding conventions, non-obvious facts/gotchas, project milestones, or user preferences that were discussed or made. For EACH item worth recording, call trapic-create with: content (one sentence), context (why it matters), tags (type + 3 topic tags), scope (project/branch/domain), confidence. Type: decision|fact|convention|state|preference. Before creating a decision/convention, call trapic-search first to check for conflicts. If conflict exists, create new then trapic-update the old one. If nothing worth recording, do nothing. Work silently, no output.'
+
+  python3 -c "
+import json, os
 p = '$SETTINGS_LOCAL'
-d = json.load(open(p))
-if 'hooks' not in d:
-  d['hooks'] = {}
-if 'SessionStart' not in d['hooks']:
-  d['hooks']['SessionStart'] = [{'matcher': 'startup', 'hooks': [{'type': 'command', 'command': '\$CLAUDE_PROJECT_DIR/.claude/hooks/trapic-recall.sh', 'timeout': 10}]}]
-  json.dump(d, open(p, 'w'), indent=2)
-  print('added')
-else:
-  print('exists')
-" 2>/dev/null | grep -q "added" && echo -e "${GREEN}✓${NC} SessionStart hook added to $SETTINGS_LOCAL" || echo -e "${GREEN}✓${NC} SessionStart hook already exists in $SETTINGS_LOCAL"
-  else
-    cat > "$SETTINGS_LOCAL" <<'SETEOF'
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/trapic-recall.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  }
-}
-SETEOF
-    echo -e "${GREEN}✓${NC} SessionStart hook added to $SETTINGS_LOCAL"
-  fi
+d = json.load(open(p)) if os.path.exists(p) else {}
+d.setdefault('hooks', {})
+d['hooks']['SessionStart'] = [{'matcher': 'startup', 'hooks': [{'type': 'command', 'command': '\$CLAUDE_PROJECT_DIR/.claude/hooks/trapic-recall.sh', 'timeout': 10}]}]
+d['hooks']['Stop'] = [{'hooks': [{'type': 'agent', 'prompt': '''$STOP_PROMPT''', 'timeout': 30}]}]
+json.dump(d, open(p, 'w'), indent=2)
+" 2>/dev/null
+  echo -e "${GREEN}✓${NC} Hooks added to $SETTINGS_LOCAL (SessionStart + Stop auto-capture)"
 else
   echo -e "${YELLOW}!${NC} Not in a git repo — skipping project-level hooks"
   echo "  Run this script from your project root to add auto-recall hooks"

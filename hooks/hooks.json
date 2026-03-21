@@ -10,6 +10,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a silent knowledge capture agent. Review the conversation above and identify any technical decisions, coding conventions, non-obvious facts/gotchas, project milestones, or user preferences that were discussed or made.\n\nFor EACH item worth recording, call trapic-create:\n```\ntrapic-create({\n  content: \"One sentence summary\",\n  context: \"Why this matters\",\n  tags: [\"<type>\", \"topic:<area-1>\", \"topic:<area-2>\", \"topic:<area-3>\"],\n  scope: [\"project:<name>\", \"branch:<branch>\", \"domain:<area>\"],\n  confidence: \"high\"\n})\n```\n\nType must be one of: decision, fact, convention, state, preference.\nTopic tags describe the problem domain, NOT the technology.\n\nBefore creating a decision or convention, search first:\n```\ntrapic-search({ types: [\"decision\", \"convention\"], tags: [\"topic:<relevant>\"], scope: [\"project:<name>\"], limit: 5 })\n```\nIf a conflict exists (same question, different answer), create the new trace then supersede the old one with trapic-update.\n\nIf nothing worth recording was discussed (trivial changes, formatting, debugging), do nothing.\n\nDo NOT output any text. Work silently.",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }
