@@ -234,12 +234,137 @@ else
   echo -e "${YELLOW}!${NC} Not in a git repo — skipping CLAUDE.md injection"
 fi
 
+# ── 5. Skills — install to .claude/skills/ ────────────────────────────
+if [ -d ".git" ]; then
+  SKILLS_DIR=".claude/skills"
+  mkdir -p "$SKILLS_DIR"
+
+  # trapic-search skill
+  mkdir -p "$SKILLS_DIR/trapic-search"
+  cat > "$SKILLS_DIR/trapic-search/SKILL.md" <<'SKILLEOF'
+---
+name: trapic-search
+description: >
+  Use when the user wants to search project knowledge, find past decisions,
+  look up conventions, or asks "what did we decide about X", "find traces
+  about Y", "search knowledge", or "what do we know about".
+---
+
+# Smart Search
+
+Search project knowledge using the `trapic-search` MCP tool.
+
+**IMPORTANT:** Call `trapic-search`, do NOT look for local files or `.trapic/` directories.
+
+## Process
+
+1. **Extract keywords** from the user's request
+2. **Infer 1-3 topic tags** for the problem domain (not the technology)
+3. **Call:**
+```
+trapic-search({
+  query: "<keyword>",
+  tags: ["topic:<inferred-1>", "topic:<inferred-2>"],
+  scope: ["project:<name>"],
+  limit: 10
+})
+```
+4. If fewer than 3 results, broaden by removing domain from scope and retry.
+
+## Filters
+- `types: ["decision"]` — only decisions
+- `types: ["convention"]` — only conventions
+- `time_days: 7` — last 7 days only
+- `status: "active"` — only active traces (default)
+SKILLEOF
+
+  # trapic-health skill
+  mkdir -p "$SKILLS_DIR/trapic-health"
+  cat > "$SKILLS_DIR/trapic-health/SKILL.md" <<'SKILLEOF'
+---
+name: trapic-health
+description: >
+  Use when the user asks about knowledge health, statistics, decay status,
+  or says "how is our knowledge", "knowledge status", "health check",
+  "how many traces", or "show knowledge stats".
+---
+
+# Knowledge Health Report
+
+**IMPORTANT:** Call `trapic-health` MCP tool. Do NOT look for local files.
+
+## Health Check
+```
+trapic-health({
+  scope: ["project:<name>"]
+})
+```
+
+## Decay Scan
+```
+trapic-decay({
+  scope: ["project:<name>"],
+  threshold: 0.3
+})
+```
+
+## Presenting Results
+1. Lead with health score and one-line assessment
+2. Highlight concerns (high staleness, missing types)
+3. If stale traces exist, suggest `/trapic-review`
+4. Use tables for type distribution
+SKILLEOF
+
+  # trapic-review skill
+  mkdir -p "$SKILLS_DIR/trapic-review"
+  cat > "$SKILLS_DIR/trapic-review/SKILL.md" <<'SKILLEOF'
+---
+name: trapic-review
+description: >
+  Use before git commits to check staged changes against conventions,
+  or to review stale knowledge. Triggers on "review conventions",
+  "check before commit", "review stale", or "clean up old traces".
+disable-model-invocation: true
+---
+
+# Pre-Commit Review & Stale Cleanup
+
+**IMPORTANT:** Call Trapic MCP tools. Do NOT look for local files.
+
+## Pre-Commit Convention Check
+1. Run `git diff --staged`
+2. Fetch conventions:
+```
+trapic-search({
+  types: ["convention", "decision", "preference"],
+  scope: ["project:<name>"],
+  limit: 20
+})
+```
+3. Compare staged diff against conventions — flag violations
+4. Fix violations before committing
+
+## Stale Knowledge Review
+1. Scan: `trapic-decay({ scope: ["project:<name>"], threshold: 0.3 })`
+2. For each stale trace:
+   - Still valid: `trapic-review-stale({ trace_id: "<id>", action: "confirm" })`
+   - Outdated: `trapic-review-stale({ trace_id: "<id>", action: "deprecate" })`
+3. Report summary to user
+SKILLEOF
+
+  echo -e "${GREEN}✓${NC} Skills installed to $SKILLS_DIR/ (trapic-search, trapic-health, trapic-review)"
+else
+  echo -e "${YELLOW}!${NC} Not in a git repo — skipping skills installation"
+fi
+
 # ── Done ──────────────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}=== Done ===${NC}"
 echo ""
 echo "  Restart Claude Code to activate."
 echo ""
-echo "  MCP tools available: trapic-recall, trapic-create, trapic-search,"
+echo "  MCP tools: trapic-recall, trapic-create, trapic-search,"
 echo "  trapic-update, trapic-health, trapic-decay, trapic-review-stale"
+echo ""
+echo "  Skills:  /trapic-search, /trapic-health, /trapic-review"
 echo ""

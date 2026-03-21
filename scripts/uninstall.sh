@@ -87,7 +87,22 @@ else
   echo -e "${YELLOW}!${NC} No Trapic instructions in CLAUDE.md"
 fi
 
-# ── 4. Remove token (optional) ───────────────────────────────────────
+# ── 4. Remove skills ─────────────────────────────────────────────────
+REMOVED_SKILLS=0
+for SKILL_NAME in trapic-search trapic-health trapic-review; do
+  SKILL_DIR=".claude/skills/$SKILL_NAME"
+  if [ -d "$SKILL_DIR" ]; then
+    rm -rf "$SKILL_DIR"
+    REMOVED_SKILLS=$((REMOVED_SKILLS + 1))
+  fi
+done
+if [ $REMOVED_SKILLS -gt 0 ]; then
+  echo -e "${GREEN}✓${NC} Removed $REMOVED_SKILLS skill(s) from .claude/skills/"
+else
+  echo -e "${YELLOW}!${NC} No Trapic skills found in .claude/skills/"
+fi
+
+# ── 5. Remove token (optional) ───────────────────────────────────────
 SETTINGS="$HOME/.claude/settings.json"
 if [ -f "$SETTINGS" ] && grep -q "TRAPIC_TOKEN" "$SETTINGS" 2>/dev/null; then
   echo ""
