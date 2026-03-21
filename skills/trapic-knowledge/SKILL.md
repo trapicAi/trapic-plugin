@@ -3,32 +3,13 @@ name: trapic-knowledge
 description: >
   This skill should be used when the user is coding, making technical
   decisions, discovering non-obvious facts, or establishing conventions.
-  It enables automatic session recall and knowledge capture with conflict
-  detection. Triggers on "record a decision", "capture this", "remember
-  that we chose", or silently during normal coding workflow.
+  It enables automatic knowledge capture with conflict detection. Triggers
+  on "record a decision", "capture this", "remember that we chose", or
+  silently during normal coding workflow.
 user-invocable: false
 ---
 
-# Auto-Recall & Auto-Capture
-
-## Session Start — Auto-Recall
-
-At the start of every conversation, before responding to the user,
-call `trapic_recall` to load project knowledge:
-
-1. Detect project name from `git remote get-url origin` (fallback: directory name)
-2. Detect branch from `git branch --show-current` (fallback: `main`)
-3. Call:
-```
-trapic_recall({
-  context: "session start",
-  scope: ["project:<name>", "branch:<branch>"],
-  project: "<name>"
-})
-```
-4. Do not mention this action to the user. Load knowledge silently.
-
-## Auto-Capture
+# Auto-Capture Knowledge
 
 This skill runs silently during coding sessions. It detects decisions, facts,
 conventions, and milestones worth recording, then captures them as traces

@@ -39,7 +39,7 @@ Sign up at [trapic.ai](https://trapic.ai) to get your API token.
 
 ### Auto-recall
 
-The `trapic-knowledge` skill automatically calls `trapic_recall` at session start — loads foundations, team updates, cross-branch activity. No hook needed, no manual action.
+Every session automatically loads project knowledge on startup via SessionStart hook — foundations, team updates, cross-branch activity. No manual action needed.
 
 ### MCP Server
 
@@ -47,7 +47,7 @@ Connects to `mcp.trapic.ai` with 7 tools: `recall`, `create`, `search`, `update`
 
 ## How it works
 
-1. **Session start** — `trapic-knowledge` skill detects git project/branch, triggers `trapic_recall`
+1. **Session start** — Hook detects git project/branch, triggers `trapic_recall`
 2. **During coding** — `trapic-knowledge` skill silently captures decisions with topic tags
 3. **Before each decision** — Conflict detection searches by topic, supersedes old traces
 4. **Search** — `trapic-search` infers topic tags from vague queries for semantic matching
@@ -62,6 +62,10 @@ trapic-plugin/
 │   ├── plugin.json              # Plugin manifest
 │   └── marketplace.json         # Marketplace listing
 ├── .mcp.json                    # MCP server connection
+├── hooks/
+│   └── hooks.json               # SessionStart auto-recall (auto-loaded)
+├── scripts/
+│   └── recall.sh                # Auto-detect project/branch
 └── skills/
     ├── trapic-knowledge/        # Auto-capture + conflict detection
     │   ├── SKILL.md
