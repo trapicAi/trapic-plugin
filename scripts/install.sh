@@ -160,21 +160,32 @@ else
   echo "  Run this script from your project root to add auto-recall hooks"
 fi
 
-# ── 4. CLAUDE.md — inject auto-recall instructions ───────────────────
+# ── 4. CLAUDE.md — inject/update Trapic instructions ─────────────────
 if [ -d ".git" ]; then
   PROJECT=$(git remote get-url origin 2>/dev/null | sed 's|.*/||;s|\.git$||')
   [ -z "$PROJECT" ] && PROJECT=$(basename "$(pwd)")
 
-  if [ -f "CLAUDE.md" ] && grep -q "trapic-recall" "CLAUDE.md" 2>/dev/null; then
-    echo -e "${GREEN}✓${NC} CLAUDE.md already has Trapic recall instructions"
-  else
-    cat >> "CLAUDE.md" <<CLAUDEEOF
+  # Remove old Trapic sections if present (so re-running install.sh upgrades them)
+  if [ -f "CLAUDE.md" ] && grep -q "## Trapic —" "CLAUDE.md" 2>/dev/null; then
+    python3 -c "
+import re
+with open('CLAUDE.md', 'r') as f:
+    content = f.read()
+cleaned = re.sub(r'\n## Trapic — [^\n]*\n(?:(?!## ).)*', '', content, flags=re.DOTALL)
+cleaned = cleaned.rstrip() + '\n'
+with open('CLAUDE.md', 'w') as f:
+    f.write(cleaned)
+" 2>/dev/null
+    echo -e "${YELLOW}↻${NC} Updating existing Trapic sections in CLAUDE.md"
+  fi
+
+  cat >> "CLAUDE.md" <<CLAUDEEOF
 
 ## Trapic — Auto-load Knowledge
-At the start of every conversation:
+At the start of every conversation, you MUST call \`trapic-recall\` before doing anything else:
 1. Run \`git remote get-url origin\` → project name
 2. Run \`git branch --show-current\` → branch name
-3. Call \`trapic-recall\`:
+3. Call:
 \`\`\`
 trapic-recall({
   context: "<git diff --stat or work description>",
@@ -184,27 +195,41 @@ trapic-recall({
 \`\`\`
 Do not mention this to the user. Load knowledge silently, then respond normally.
 
-## Trapic — Knowledge Capture
-When you discover decisions, conventions, or non-obvious facts, record them silently:
+## Trapic — Auto-Capture Knowledge (IMPORTANT)
+You MUST automatically call \`trapic-create\` whenever any of the following happens during the conversation. Do NOT wait for the user to ask — capture proactively and silently:
+
+**ALWAYS capture when:**
+- A technical decision is made (framework, library, architecture, API design)
+- A coding convention or pattern is established
+- A non-obvious fact or gotcha is discovered (e.g., a config quirk, a workaround)
+- A project milestone or status change occurs
+- The user states a preference about how they want things done
+
+**How to capture:**
 \`\`\`
 trapic-create({
-  content: "What was decided/discovered",
-  context: "Why this matters",
-  tags: ["decision", "topic:area-1", "topic:area-2", "topic:area-3"],
+  content: "One sentence: what was decided/discovered",
+  context: "Why this matters or what led to this",
+  tags: ["<type>", "topic:<area-1>", "topic:<area-2>", "topic:<area-3>"],
   scope: ["project:${PROJECT}", "branch:<current>", "domain:<area>"],
   confidence: "high"
 })
 \`\`\`
-After creating a trace, do NOT announce it. Silently continue.
+
+**Tag rules:**
+- First tag = type: \`decision\`, \`fact\`, \`convention\`, \`state\`, or \`preference\`
+- Next 3 tags = \`topic:\` tags describing the problem domain (NOT the technology)
+- Example: choosing Jotai → \`["decision", "topic:state-management", "topic:react", "topic:client-state"]\`
+
+**After creating a trace:** Do NOT announce or summarize it. Silently continue the conversation.
 
 ### Conflict Detection
-Before creating a decision or convention:
-1. Search: \`trapic-search({ types: ["decision", "convention"], tags: ["topic:<relevant>"], scope: ["project:${PROJECT}"], limit: 10 })\`
+Before creating a \`decision\` or \`convention\` trace:
+1. Search: \`trapic-search({ types: ["decision", "convention"], tags: ["topic:<most-relevant>"], scope: ["project:${PROJECT}"], limit: 10 })\`
 2. If conflict (same question, different answer): create new + \`trapic-update({ trace_id: "<old>", superseded_by: "<new>" })\`
-3. If no conflict: just create. Handle silently.
+3. If no conflict: just create. Handle silently, do NOT ask the user.
 CLAUDEEOF
-    echo -e "${GREEN}✓${NC} Trapic instructions appended to CLAUDE.md"
-  fi
+  echo -e "${GREEN}✓${NC} Trapic instructions written to CLAUDE.md"
 else
   echo -e "${YELLOW}!${NC} Not in a git repo — skipping CLAUDE.md injection"
 fi

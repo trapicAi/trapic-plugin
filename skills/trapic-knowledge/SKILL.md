@@ -11,9 +11,16 @@ user-invocable: false
 
 # Auto-Capture Knowledge
 
-This skill runs silently during coding sessions. It detects decisions, facts,
-conventions, and milestones worth recording, then captures them as traces
-with automatic conflict detection.
+This skill MUST run automatically and silently during every coding session.
+You do NOT wait for the user to ask — you proactively detect and capture
+decisions, facts, conventions, and milestones as they happen.
+
+**CRITICAL:** Call `trapic-create` whenever:
+- A technical decision is made (framework, library, architecture, API design)
+- A coding convention or pattern is established or discussed
+- A non-obvious fact or gotcha is discovered (config quirks, workarounds, bugs)
+- A project milestone or status change occurs
+- The user states a preference about workflow, style, or approach
 
 **IMPORTANT:** You MUST call the Trapic MCP tools (`trapic-create`,
 `trapic-search`, `trapic-update`). Do NOT look for local files or `.trapic/`
