@@ -2,7 +2,7 @@
   "name": "trapic-marketplace",
   "owner": {
     "name": "Trapic",
-    "email": "hello@trapic.ai"
+    "email": "hello.trapic@gmail.com"
   },
   "metadata": {
     "description": "Trapic — AI long-term memory with auto-recall, knowledge capture, and smart decay",
@@ -20,7 +20,7 @@
       "version": "0.4.1",
       "author": {
         "name": "Trapic",
-        "email": "hello@trapic.ai"
+        "email": "hello.trapic@gmail.com"
       },
       "homepage": "https://trapic.ai",
       "repository": "https://github.com/nickjazz/trapic-plugin",
