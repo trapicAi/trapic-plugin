@@ -10,7 +10,6 @@
   "repository": "https://github.com/nickjazz/trapic-plugin",
   "license": "MIT",
   "keywords": ["memory", "knowledge", "mcp", "recall", "trapic"],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json",
   "skills": "./skills/"
 }
