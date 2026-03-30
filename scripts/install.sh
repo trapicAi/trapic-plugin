@@ -164,7 +164,13 @@ BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 [ -z "$PROJECT" ] && PROJECT=$(basename "$(pwd)")
 
 if [ -z "$TRAPIC_TOKEN" ]; then
-  echo "TRAPIC_TOKEN is not set. Add it to ~/.claude/settings.json under env.TRAPIC_TOKEN"
+  cat <<NOTOKEN
+TRAPIC_TOKEN is not set. To fix:
+1. Get your token at https://trapic.ai/collaborate/keys
+2. Add to ~/.claude/settings.json:
+   { "env": { "TRAPIC_TOKEN": "tr_your_token_here" } }
+3. Restart Claude Code
+NOTOKEN
   exit 0
 fi
 
@@ -182,15 +188,33 @@ HOOKEOF
   STOP_PROMPT='You are a silent knowledge capture agent. Review the conversation above and identify any technical decisions, coding conventions, non-obvious facts/gotchas, project milestones, or user preferences that were discussed or made. For EACH item worth recording, call trapic-create with: content (one sentence or markdown), context (why it matters), tags (3 topic: tags + project: tag + branch: tag), confidence, and caused_by (IDs of related traces if applicable). Type should be set via the type parameter: decision|fact|convention|state|preference. Before creating a decision/convention, call trapic-search first to check for conflicts. If conflict exists: 1) create new trace mentioning the superseded decision, 2) call trapic-update on old trace with superseded_by. If nothing worth recording, do nothing. Work silently, no output.'
 
   python3 -c "
-import json, os
+import json, os, sys
 p = '$SETTINGS_LOCAL'
-d = json.load(open(p)) if os.path.exists(p) else {}
+try:
+    d = json.load(open(p)) if os.path.exists(p) else {}
+except:
+    d = {}
 d.setdefault('hooks', {})
 d['hooks']['SessionStart'] = [{'matcher': 'startup|compact|resume', 'hooks': [{'type': 'command', 'command': '\$CLAUDE_PROJECT_DIR/.claude/hooks/trapic-recall.sh', 'timeout': 10}]}]
 d['hooks']['Stop'] = [{'hooks': [{'type': 'agent', 'prompt': '''$STOP_PROMPT''', 'timeout': 60}]}]
 json.dump(d, open(p, 'w'), indent=2)
-" 2>/dev/null
-  echo -e "${GREEN}✓${NC} Hooks added to $SETTINGS_LOCAL (SessionStart + Stop auto-capture)"
+print('ok')
+"
+  if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓${NC} Hooks added to $SETTINGS_LOCAL (SessionStart + Stop auto-capture)"
+  else
+    echo -e "${YELLOW}!${NC} Failed to write hooks to $SETTINGS_LOCAL — check python3 is installed"
+    # Fallback: write JSON directly
+    cat > "$SETTINGS_LOCAL" <<HOOKSEOF
+{
+  "hooks": {
+    "SessionStart": [{"matcher": "startup|compact|resume", "hooks": [{"type": "command", "command": "\$CLAUDE_PROJECT_DIR/.claude/hooks/trapic-recall.sh", "timeout": 10}]}],
+    "Stop": [{"hooks": [{"type": "agent", "prompt": "$STOP_PROMPT", "timeout": 60}]}]
+  }
+}
+HOOKSEOF
+    echo -e "${GREEN}✓${NC} Hooks written to $SETTINGS_LOCAL (fallback method)"
+  fi
 else
   echo -e "${YELLOW}!${NC} Not in a git repo — skipping project-level hooks"
   echo "  Run this script from your project root to add auto-recall hooks"
