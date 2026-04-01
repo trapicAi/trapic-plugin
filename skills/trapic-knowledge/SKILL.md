@@ -31,6 +31,15 @@ You do NOT wait for the user to ask — proactively detect and capture.
 - Trivial UI micro-adjustments
 - Temporary debugging steps
 
+## Team Session Flow
+
+At **session start**, call `trapic-recall` or `trapic-my-teams` to detect user's teams:
+- **0 teams** → all traces are private
+- **1 team** → auto-selected, remember `team_id` for this session
+- **2+ teams** → ask user which team, remember their choice
+
+Once you know `team_id`, pass it to ALL subsequent `trapic-create`, `trapic-recall`, and `trapic-refresh` calls. Do NOT ask again in the same session.
+
 ## How to capture:
 
 ```
@@ -40,14 +49,16 @@ trapic-create({
   type: "decision",
   tags: ["topic:<area-1>", "topic:<area-2>", "topic:<area-3>", "project:<name>", "branch:<branch>"],
   confidence: "high",
-  visibility: "public"
+  team_id: "<team_id from session start>"
 })
 ```
 
+**team_id**: Pass the team_id obtained at session start. If provided, visibility is automatically set to "team" with the correct `visible_to_teams`. If omitted and user has 1 team, auto-fills. If omitted and user has 2+ teams, returns error.
+
 ## Visibility:
-- `"public"` (default) — all team members can see
+- `"public"` (default when no team) — all team members can see
 - `"private"` — only the author can see (auto-set if any `private:` tag is present)
-- `"team"` — only specific team members can see
+- `"team"` — auto-set when `team_id` is provided
 
 Traces with `private:` prefix tags are automatically set to `visibility: "private"` even if you don't set it explicitly.
 
