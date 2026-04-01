@@ -40,6 +40,8 @@ At **session start**, call `trapic-recall` or `trapic-my-teams` to detect user's
 
 Once you know `team_id`, pass it to ALL subsequent `trapic-create`, `trapic-recall`, and `trapic-refresh` calls. Do NOT ask again in the same session.
 
+**Response style**: After user picks a team, confirm with just the team NAME: "好，這個 session 的知識都會記錄在 **{team_name}** 裡。" Do NOT show team_id or UUIDs to the user — those are for machine use only.
+
 ## How to capture:
 
 ```
