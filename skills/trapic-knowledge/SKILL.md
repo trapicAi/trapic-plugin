@@ -95,41 +95,70 @@ Topics describe the **problem area / domain**, never the specific technology:
 | Stripe / PayPal | `topic:finance`, `topic:payments`, `topic:commerce` |
 | PostgreSQL / Supabase | `topic:database`, `topic:infrastructure`, `topic:backend` |
 
-## Tag Rules
+## Tag Rules (based on IAB Content Taxonomy v3)
 
 Every trace MUST have at least 1 **domain tag** (broad category). May optionally add **specific tags** for well-known terms.
 
 ### Domain tags (REQUIRED — at least 1 per trace)
 
-**Business & Finance:**
-`finance`, `payments`, `accounting`, `investing`, `insurance`, `banking`, `commerce`, `pricing`, `taxation`
+Based on [IAB Content Taxonomy v3](https://github.com/InteractiveAdvertisingBureau/Taxonomies) + technology extensions.
 
-**Technology & Engineering:**
-`frontend`, `backend`, `database`, `infrastructure`, `devops`, `api`, `security`, `networking`, `cloud`, `mobile`, `ai`, `machine-learning`, `data-engineering`
+**Business & Finance:**
+`business`, `finance`, `payments`, `accounting`, `investing`, `insurance`, `banking`, `commerce`, `pricing`, `personal-finance`, `real-estate`
+
+**Technology & Computing:**
+`technology`, `computing`, `ai`, `machine-learning`, `frontend`, `backend`, `database`, `infrastructure`, `devops`, `api`, `security`, `networking`, `cloud`, `mobile`, `robotics`, `data-engineering`, `virtual-reality`, `augmented-reality`
 
 **Science & Health:**
-`medical`, `mental-health`, `nutrition`, `fitness`, `biology`, `chemistry`, `physics`, `environmental`
-
-**Creative & Media:**
-`design`, `photography`, `video`, `music`, `art`, `writing`, `animation`, `branding`
-
-**Law & Governance:**
-`legal`, `compliance`, `privacy`, `intellectual-property`, `regulation`, `contracts`
+`science`, `medical`, `mental-health`, `nutrition`, `fitness`, `wellness`, `biology`, `chemistry`, `physics`, `environmental`, `genetics`, `space`
 
 **Education & Career:**
-`education`, `career`, `hiring`, `management`, `leadership`, `productivity`, `training`
+`education`, `career`, `job-search`, `remote-working`, `online-education`, `language-learning`, `training`, `vocational`
 
-**Lifestyle:**
-`cooking`, `travel`, `automotive`, `home-improvement`, `gardening`, `pets`, `parenting`, `relationships`
+**Law & Politics:**
+`legal`, `compliance`, `privacy`, `regulation`, `contracts`, `politics`, `elections`, `policy`
 
-**Commerce & Marketing:**
+**Creative & Fine Art:**
+`design`, `photography`, `video`, `music`, `art`, `writing`, `animation`, `digital-arts`, `branding`
+
+**Food & Drink:**
+`cooking`, `dining`, `baking`, `beverages`, `healthy-eating`, `world-cuisines`
+
+**Home & Garden:**
+`home-improvement`, `gardening`, `interior-decorating`, `landscaping`, `smart-home`, `home-security`
+
+**Travel & Automotive:**
+`travel`, `automotive`, `auto-repair`, `auto-technology`, `road-trips`
+
+**Family & Relationships:**
+`parenting`, `dating`, `marriage`, `eldercare`, `relationships`
+
+**Shopping & Commerce:**
+`shopping`, `coupons`, `gifts`, `grocery`
+
+**Marketing & Advertising:**
 `marketing`, `seo`, `content-strategy`, `advertising`, `analytics`, `social-media`, `email-marketing`
 
-**Entertainment:**
-`gaming`, `sports`, `entertainment`, `streaming`, `books`, `podcasts`
+**Entertainment & Media:**
+`entertainment`, `movies`, `television`, `gaming`, `esports`, `streaming`, `books`, `podcasts`, `pop-culture`
 
-**Operations:**
-`project-management`, `logistics`, `supply-chain`, `customer-support`, `quality-assurance`
+**Sports & Fitness:**
+`sports`, `soccer`, `basketball`, `tennis`, `martial-arts`, `cycling`, `swimming`, `golf`
+
+**Pets & Animals:**
+`pets`, `dogs`, `cats`, `veterinary`
+
+**Hobbies & Interests:**
+`crafts`, `collecting`, `puzzles`, `musical-instruments`, `workshops`
+
+**Style & Fashion:**
+`fashion`, `beauty`, `personal-care`
+
+**Operations & Management:**
+`project-management`, `logistics`, `supply-chain`, `customer-support`, `quality-assurance`, `hiring`, `leadership`, `productivity`
+
+**Religion & Spirituality:**
+`religion`, `spirituality`, `philosophy`
 
 ### Specific tags (OPTIONAL — well-known terms OK)
 
@@ -137,9 +166,9 @@ Well-known frameworks, products, or terms can be added AS EXTRA tags, never as t
 
 ```
 ✅ tags: ["topic:payments", "topic:commerce", "topic:stripe"]
-         ↑ domain (required)  ↑ domain        ↑ specific (optional, Stripe is well-known)
+         ↑ domain (required)  ↑ domain        ↑ specific (optional, well-known)
 
-✅ tags: ["topic:frontend", "topic:framework", "topic:react"]
+✅ tags: ["topic:frontend", "topic:technology", "topic:react"]
 
 ❌ tags: ["topic:stripe"]  ← missing domain tag
 ❌ tags: ["topic:dr-patel"] ← not well-known, use "topic:medical" instead
