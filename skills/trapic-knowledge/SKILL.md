@@ -93,6 +93,28 @@ Topics describe the **problem area**, not the technology:
 | Next.js / Vite | `topic:framework`, `topic:ssr`, `topic:bundler` |
 | Redis / In-memory | `topic:caching`, `topic:performance`, `topic:infrastructure` |
 
+## Standardized Tag Vocabulary
+
+Tags MUST describe **category/domain**, not specific objects or names.
+
+**Standard categories:**
+`medical`, `finance`, `legal`, `education`, `technology`, `cooking`, `travel`, `fitness`,
+`entertainment`, `shopping`, `home-improvement`, `career`, `relationships`, `automotive`,
+`pets`, `gardening`, `music`, `art`, `gaming`, `sports`
+
+**NEVER use proper nouns as tags:**
+- NOT `topic:dr-patel`, `topic:stripe`, `topic:react` ← these are specific names/products
+- NOT `topic:supabase`, `topic:claude`, `topic:vite` ← these are product names
+
+**Tags answer "what domain is this about?" not "what specific thing is mentioned?"**
+
+| Wrong (specific) | Correct (domain) |
+|------------------|------------------|
+| `topic:stripe` | `topic:finance`, `topic:payments` |
+| `topic:supabase` | `topic:database`, `topic:infrastructure` |
+| `topic:react` | `topic:technology`, `topic:framework` |
+| `topic:dr-patel` | `topic:medical` |
+
 ## Conflict Detection
 
 Before creating a `decision` or `convention`:
