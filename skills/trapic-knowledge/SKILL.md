@@ -14,7 +14,9 @@ user-invocable: false
 This skill MUST run automatically and silently during every coding session.
 You do NOT wait for the user to ask — proactively detect and capture.
 
-**IMPORTANT:** Call `trapic-create` MCP tool. Do NOT look for local files.
+**IMPORTANT:** Call the unified `trapic` MCP tool with `action: "create"`. Do NOT look for local files.
+
+> Trapic uses a single unified tool to minimize context window overhead (~170 tokens vs ~3,100 for 12 separate tools). Legacy tool names (e.g. `trapic-create`) still work for backward compatibility.
 
 ## ALWAYS capture when:
 - A technical decision is made (framework, library, architecture, API design)
@@ -35,13 +37,13 @@ You do NOT wait for the user to ask — proactively detect and capture.
 
 ## Team Session Flow (MANDATORY — do NOT skip)
 
-After calling `trapic-recall`, CHECK the response for "Team Selection Required". This is NOT optional metadata — you MUST act on it:
+After calling `trapic({action: "recall", ...})`, CHECK the response for "Team Selection Required". This is NOT optional metadata — you MUST act on it:
 
 - **0 teams** → tell user: "No teams found. All traces will be private."
 - **1 team** → tell user: "All knowledge will be recorded in **{team_name}**."
 - **2+ teams** → STOP and ASK the user: "You have N teams: {list names}. Which one should I record in for this session?" WAIT for their answer before doing anything else.
 
-Once you know `team_id`, pass it to ALL subsequent `trapic-create`, `trapic-recall`, and `trapic-refresh` calls. Do NOT ask again in the same session.
+Once you know `team_id`, pass it to ALL subsequent `trapic({action: "create"})`, `trapic({action: "recall"})`, and `trapic({action: "refresh"})` calls. Do NOT ask again in the same session.
 
 **CRITICAL**: Do NOT summarize or skip the team selection prompt. Do NOT proceed with work until the user has chosen a team (when 2+ teams exist).
 
@@ -50,13 +52,16 @@ Once you know `team_id`, pass it to ALL subsequent `trapic-create`, `trapic-reca
 ## How to capture:
 
 ```
-trapic-create({
-  content: "One sentence in ENGLISH: what was decided/discovered",
-  context: "Why this matters (in English)",
-  type: "decision",
-  tags: ["topic:<area-1>", "topic:<area-2>", "topic:<area-3>", "project:<name>", "branch:<branch>"],
-  confidence: "high",
-  team_id: "<team_id from session start>"
+trapic({
+  action: "create",
+  params: {
+    content: "One sentence in ENGLISH: what was decided/discovered",
+    context: "Why this matters (in English)",
+    type: "decision",
+    tags: ["topic:<area-1>", "topic:<area-2>", "topic:<area-3>", "project:<name>", "branch:<branch>"],
+    confidence: "high",
+    team_id: "<team_id from session start>"
+  }
 })
 ```
 
@@ -140,8 +145,8 @@ Well-known terms can be added as EXTRA tags, never as the ONLY tag:
 ## Conflict Detection
 
 Before creating a `decision` or `convention`:
-1. `trapic-search({ types: ["decision", "convention"], tags: ["topic:<relevant>", "project:<name>"], limit: 10 })`
-2. Conflict (same question, different answer) → create new + `trapic-update({ trace_id: "<old>", superseded_by: "<new>" })`
+1. `trapic({action: "search", params: { types: ["decision", "convention"], tags: ["topic:<relevant>", "project:<name>"], limit: 10 }})`
+2. Conflict (same question, different answer) → create new + `trapic({action: "update", params: { trace_id: "<old>", superseded_by: "<new>" }})`
 3. No conflict → just create
 
 Handle silently. Do NOT ask the user.
@@ -153,5 +158,5 @@ After creating a trace, do NOT announce or summarize it. Silently continue.
 ## Trace Lifecycle
 
 When completing work recorded as a state trace:
-- Use `trapic-update` to update content to reflect completion
+- Use `trapic({action: "update"})` to update content to reflect completion
 - Mark obsolete traces as `superseded` or `deprecated`

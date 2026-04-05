@@ -98,8 +98,8 @@ BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 [ -z "$PROJECT" ] && PROJECT=$(basename "$(pwd)")
 
 cat <<EOF
-Call trapic-recall to load project knowledge before responding:
-trapic-recall({ context: "session start", scope: ["project:${PROJECT}", "branch:${BRANCH}"], project: "${PROJECT}" })
+Call trapic to load project knowledge before responding:
+trapic({action: "recall", params: { context: "session start", scope: ["project:${PROJECT}", "branch:${BRANCH}"], project: "${PROJECT}" }})
 EOF
 ```
 
@@ -136,17 +136,21 @@ curl -fsSL https://raw.githubusercontent.com/trapicAi/trapic-plugin/main/scripts
 
 ## 你會得到什麼
 
-### 7 個 MCP 工具
+### 1 個統一 MCP 工具
 
-| 工具 | 功能 |
+Trapic 使用單一統一工具以最小化上下文視窗開銷（~170 tokens vs 12 個獨立工具的 ~3,100 tokens）。
+
+| 動作 | 功能 |
 |------|------|
-| `trapic-recall` | Session 開始時載入專案知識 |
-| `trapic-create` | 建立新的知識 trace |
-| `trapic-search` | 用關鍵字、標籤、scope 搜尋 |
-| `trapic-update` | 更新 trace 狀態、內容、標籤 |
-| `trapic-health` | 專案知識健康度報告 |
-| `trapic-decay` | 掃描過期/衰減中的知識 |
-| `trapic-review-stale` | 確認或廢棄過期 trace |
+| `trapic({action: "recall"})` | Session 開始時載入專案知識 |
+| `trapic({action: "create"})` | 建立新的知識 trace |
+| `trapic({action: "search"})` | 用關鍵字、標籤、scope 搜尋 |
+| `trapic({action: "update"})` | 更新 trace 狀態、內容、標籤 |
+| `trapic({action: "health"})` | 專案知識健康度報告 |
+| `trapic({action: "decay"})` | 掃描過期/衰減中的知識 |
+| `trapic({action: "review-stale"})` | 確認或廢棄過期 trace |
+
+> 舊工具名稱（如 `trapic-recall`）仍然可以使用（向後相容）。
 
 ### 4 個 Skill（僅 plugin 安裝）
 
@@ -159,10 +163,10 @@ curl -fsSL https://raw.githubusercontent.com/trapicAi/trapic-plugin/main/scripts
 
 ## 運作流程
 
-1. **Session 開始** — Hook + CLAUDE.md 觸發 `trapic-recall`，載入完整專案上下文
+1. **Session 開始** — Hook + CLAUDE.md 觸發 `trapic({action: "recall"})`，載入完整專案上下文
 2. **寫程式時** — 決策、慣例、事實被靜默捕捉，帶 topic tag
 3. **每次決策前** — 衝突偵測搜尋相同 topic，自動取代過時 trace
-4. **搜尋** — `trapic-search` 從模糊查詢推斷 topic tag，語意匹配
+4. **搜尋** — `trapic({action: "search"})` 從模糊查詢推斷 topic tag，語意匹配
 5. **commit 前** — `/trapic-review` 檢查 staged diff 是否違反慣例
 6. **維護** — `/trapic-health` 顯示健康度，衰減系統標記過期知識
 

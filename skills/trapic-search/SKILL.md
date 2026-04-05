@@ -8,9 +8,11 @@ description: >
 
 # Smart Search
 
-Search project knowledge using the `trapic-search` MCP tool.
+Search project knowledge using the unified `trapic` MCP tool with `action: "search"`.
 
 **IMPORTANT:** Do NOT look for local files or `.trapic/` directories. All knowledge is on the remote Trapic server.
+
+> Trapic uses a single unified tool to minimize context window overhead (~170 tokens vs ~3,100 for 12 separate tools). Legacy tool names (e.g. `trapic-search`) still work for backward compatibility.
 
 ## CRITICAL: Tags-First Search Strategy
 
@@ -35,12 +37,15 @@ Just like Claude Code uses `grep` with the right keywords (not raw natural langu
 | "How do we make components accessible?" | `topic:accessibility` | — |
 | "What's our API error format?" | `topic:api`, `topic:error-handling` | — |
 
-**Step 2 — Call `trapic-search`** with tags + optional keyword:
+**Step 2 — Call `trapic({action: "search"})`** with tags + optional keyword:
 ```
-trapic-search({
-  tags: ["topic:<inferred-1>", "topic:<inferred-2>", "project:<name>"],
-  query: "<precise keyword if helpful>",
-  limit: 10
+trapic({
+  action: "search",
+  params: {
+    tags: ["topic:<inferred-1>", "topic:<inferred-2>", "project:<name>"],
+    query: "<precise keyword if helpful>",
+    limit: 10
+  }
 })
 ```
 
@@ -50,16 +55,19 @@ Tags and keywords work together — `project:`/`branch:` tags use AND logic (mus
 
 **Step 4 — If still 0**, try keyword-only with a single technical term:
 ```
-trapic-search({
-  tags: ["project:<name>"],
-  query: "<single technical keyword>",
-  limit: 20
+trapic({
+  action: "search",
+  params: {
+    tags: ["project:<name>"],
+    query: "<single technical keyword>",
+    limit: 20
+  }
 })
 ```
 
-**Step 5 — Need full content?** Use `trapic-get` to read a specific trace:
+**Step 5 — Need full content?** Use `trapic({action: "get"})` to read a specific trace:
 ```
-trapic-get({ trace_id: "<id from search results>" })
+trapic({action: "get", params: { trace_id: "<id from search results>" }})
 ```
 
 ## Examples
@@ -67,17 +75,17 @@ trapic-get({ trace_id: "<id from search results>" })
 ```
 User: "How do we make the app work offline?"
   → AI infers: offline capability, sync
-  → trapic-search({ tags: ["topic:offline", "topic:sync", "project:mobile-app"], query: "offline" })
+  → trapic({action: "search", params: { tags: ["topic:offline", "topic:sync", "project:mobile-app"], query: "offline" }})
   → Finds: "Offline data sync uses WatermelonDB" (tag match on topic:offline)
 
 User: "What's our error handling convention?"
   → AI infers: error handling patterns
-  → trapic-search({ tags: ["topic:error-handling", "project:myapp"], types: ["convention"] })
+  → trapic({action: "search", params: { tags: ["topic:error-handling", "project:myapp"], types: ["convention"] }})
   → Finds: "API error responses follow RFC 7807" (tag match + type filter)
 
 User: "What did we decide about Stripe?"
   → AI infers: payments, integration
-  → trapic-search({ tags: ["topic:payments", "project:ecommerce"], query: "Stripe" })
+  → trapic({action: "search", params: { tags: ["topic:payments", "project:ecommerce"], query: "Stripe" }})
   → Finds: "Chose Stripe over PayPal" (both tag and keyword match)
 ```
 

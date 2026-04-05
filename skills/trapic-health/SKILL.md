@@ -12,16 +12,21 @@ description: >
 This skill provides a comprehensive view of project knowledge health using
 the Trapic MCP tools.
 
-**IMPORTANT:** You MUST call the MCP tools below. Do NOT look for local files
+**IMPORTANT:** You MUST call the unified `trapic` MCP tool. Do NOT look for local files
 or `.trapic/` directories. All knowledge is stored on the remote Trapic server.
+
+> Trapic uses a single unified tool to minimize context window overhead (~170 tokens vs ~3,100 for 12 separate tools).
 
 ## Health Check
 
-Call the `trapic-health` tool:
+Call `trapic` with action `"health"`:
 
 ```
-trapic-health({
-  scope: ["project:<name>"]
+trapic({
+  action: "health",
+  params: {
+    scope: ["project:<name>"]
+  }
 })
 ```
 
@@ -36,12 +41,15 @@ This returns:
 
 ## Decay Scan
 
-Call the `trapic-decay` tool:
+Call `trapic` with action `"decay"`:
 
 ```
-trapic-decay({
-  scope: ["project:<name>"],
-  threshold: 0.3
+trapic({
+  action: "decay",
+  params: {
+    scope: ["project:<name>"],
+    threshold: 0.3
+  }
 })
 ```
 

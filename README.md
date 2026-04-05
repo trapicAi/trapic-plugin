@@ -17,7 +17,7 @@ When your team uses AI tools, knowledge stays trapped in individual sessions. Sa
 ```
 You: "What did the team decide about the database?"
 
-→ AI calls trapic-recall
+→ AI calls trapic({action: "recall"})
 → Instant answer with full reasoning, source, and context
 ```
 
